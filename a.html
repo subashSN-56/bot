@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .robot-container{
+    width:50%;
+    height:500px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* SPLINE VIEWER FIX */
+.robot-container spline-viewer{
+    width:100%;
+    height:100%;
+    background:transparent !important;
+}
+
+/* Remove canvas background */
+spline-viewer::part(canvas){
+    background: transparent !important;
+}
+
+/* RESPONSIVE */
+@media (max-width:900px){
+
+    header{
+        padding:1rem 1rem;
+    }
+
+    nav{
+        gap:1rem;
+    }
+
+    .hero{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .content{
+        width:100%;
+    }
+
+    .content h1{
+        font-size:2.5rem;
+    }
+
+    .robot-container{
+        width:100%;
+        height:400px;
+        margin-top:2rem;
+    }
+}
+    </style>
+</head>
+<body>
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.70/build/spline-viewer.js"></script>
+<spline-viewer url="https://prod.spline.design/1q8YLVA3aalprBNJ/scene.splinecode"></spline-viewer>
+</body>
+</html>
