@@ -1,4 +1,3 @@
-
 import express from "express";
 import Groq from "groq-sdk";
 import User from "../models/User.js";
@@ -15,15 +14,26 @@ const groq = new Groq({
 // 🔴 Toxic words list
 const badWords = ["idiot", "stupid", "hate", "ugly", "fool", "trash"];
 
+// 👋 Default replies
+const defaultReplies = {
+  hi: "Hello 👋\nHow can I help you today?",
+  hello: "Hello 👋\nHow can I assist you?",
+  hey: "Hey there 👋\nWhat do you need help with?",
+  bye: "Goodbye 👋\nHave a great day!",
+  thanks: "You're welcome 😊\nAnything else I can help with?"
+};
+
 router.post("/", async (req, res) => {
   const { message, userId } = req.body;
 
   let user = await User.findOne({ userId });
   if (!user) user = new User({ userId });
 
+  const cleanMsg = message.toLowerCase().trim();
+
   // 🚫 TOXIC CHECK
   const isToxic = badWords.some(word =>
-    message.toLowerCase().includes(word)
+    cleanMsg.includes(word)
   );
 
   if (isToxic) {
@@ -44,6 +54,20 @@ router.post("/", async (req, res) => {
     }
   }
 
+  // 👋 DEFAULT AUTO REPLY CHECK
+  if (defaultReplies[cleanMsg]) {
+    const reply = defaultReplies[cleanMsg];
+
+    user.messages.push({
+      user: message,
+      bot: reply
+    });
+
+    await user.save();
+
+    return res.json({ reply });
+  }
+
   try {
     // 🧠 MEMORY (last 5 messages)
     const history = user.messages.slice(-5).flatMap(msg => [
@@ -55,10 +79,10 @@ router.post("/", async (req, res) => {
     const response = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [
-   {
-  role: "system",
-  content: "You are a helpful AI chatbot. Always reply ONLY in English. Do not use any other language."
-},
+        {
+          role: "system",
+          content: "You are a helpful AI chatbot. Reply in one line and only in English."
+        },
         ...history,
         { role: "user", content: message }
       ]
@@ -82,4 +106,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-export default router;  
+export default router;
