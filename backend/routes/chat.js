@@ -241,7 +241,7 @@ router.post("/", async (req, res) => {
         {
           role: "system",
           content:
-            "You are a helpful AI chatbot. Reply in one line, in English, and keep the answer under 30 words."
+            "You are a helpful AI chatbot. Reply in one line, in English, and keep the answer under 20 words."
         },
         ...history,
         { role: "user", content: message }
